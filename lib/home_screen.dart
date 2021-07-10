@@ -45,38 +45,38 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   int energySoFar = 0;
 
-  // Queue<_PositionItem> locationQueue = new Queue<_PositionItem>();
-  // StreamSubscription<Position> _positionStreamSubscription;
+  Queue<_PositionItem> locationQueue = new Queue<_PositionItem>();
+  StreamSubscription<Position> _positionStreamSubscription;
 
-  // Future<void> addLocationToQueue(_PositionItem _positionItem) async {
-  //   if (locationQueue.length == 10) {
-  //     locationQueue.removeFirst();
-  //   }
-  //   locationQueue.add(_positionItem);
+  Future<void> addLocationToQueue(_PositionItem _positionItem) async {
+    if (locationQueue.length == 10) {
+      locationQueue.removeFirst();
+    }
+    locationQueue.add(_positionItem);
 
-  //   _PositionItem firstPositionItem = locationQueue.first;
-  //   _PositionItem lastPositionItem = locationQueue.last;
-  //   int duration = firstPositionItem.time.difference(lastPositionItem.time).inMinutes;
+    _PositionItem firstPositionItem = locationQueue.first;
+    _PositionItem lastPositionItem = locationQueue.last;
+    int duration = firstPositionItem.time.difference(lastPositionItem.time).inMinutes;
 
-  //   var p = 0.017453292519943295;
-  //   var c = cos;
-  //   var a = 0.5 -
-  //       c((lastPositionItem.latitude - firstPositionItem.latitude) * p) / 2 +
-  //       c(firstPositionItem.latitude * p) *
-  //           c(lastPositionItem.latitude * p) *
-  //           (1 - c((lastPositionItem.longtitude - firstPositionItem.longtitude) * p)) /
-  //           2;
-  //   double distance = 12742 * asin(sqrt(a));
-  //   double speed = distance / duration;
-  //   if (0.08 < speed && speed < 0.086) {
-  //     mightBeWalking = true;
-  //     DateTime now = DateTime.now();
-  //     await _sendNoti('Hey, are you out in the sun?', 'If you are, remember to record your daily sun intake.',
-  //         tz.TZDateTime(tz.local, now.year, now.month, now.day, now.hour, now.minute + 1));
-  //   } else {
-  //     mightBeWalking = false;
-  //   }
-  // }
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lastPositionItem.latitude - firstPositionItem.latitude) * p) / 2 +
+        c(firstPositionItem.latitude * p) *
+            c(lastPositionItem.latitude * p) *
+            (1 - c((lastPositionItem.longtitude - firstPositionItem.longtitude) * p)) /
+            2;
+    double distance = 12742 * asin(sqrt(a));
+    double speed = distance / duration;
+    if (0.08 < speed && speed < 0.086) {
+      mightBeWalking = true;
+      DateTime now = DateTime.now();
+      await _sendNoti('Hey, are you out in the sun?', 'If you are, remember to record your daily sun intake.',
+          tz.TZDateTime(tz.local, now.year, now.month, now.day, now.hour, now.minute + 1));
+    } else {
+      mightBeWalking = false;
+    }
+  }
 
   Future<void> _initialization() async {
     DateTime now = DateTime.now();
@@ -206,33 +206,33 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  // _startLocationStreaming() {
-  //   if (_positionStreamSubscription == null) {
-  //     final positionStream = Geolocator.getPositionStream();
-  //     _positionStreamSubscription = positionStream.handleError((error) {
-  //       _positionStreamSubscription?.cancel();
-  //       _positionStreamSubscription = null;
-  //     }).listen((position) async {
-  //       await addLocationToQueue(_PositionItem(DateTime.now(), position.latitude, position.longitude));
-  //       setState(() {});
-  //     });
-  //     _positionStreamSubscription?.pause();
-  //   }
+  _startLocationStreaming() {
+    if (_positionStreamSubscription == null) {
+      final positionStream = Geolocator.getPositionStream();
+      _positionStreamSubscription = positionStream.handleError((error) {
+        _positionStreamSubscription?.cancel();
+        _positionStreamSubscription = null;
+      }).listen((position) async {
+        await addLocationToQueue(_PositionItem(DateTime.now(), position.latitude, position.longitude));
+        setState(() {});
+      });
+      _positionStreamSubscription?.pause();
+    }
 
-  //   if (_positionStreamSubscription == null) {
-  //     return;
-  //   }
+    if (_positionStreamSubscription == null) {
+      return;
+    }
 
-  //   if (_positionStreamSubscription.isPaused) {
-  //     _positionStreamSubscription.resume();
-  //   }
-  // }
+    if (_positionStreamSubscription.isPaused) {
+      _positionStreamSubscription.resume();
+    }
+  }
 
-  // _stopLocationStreaming() {
-  //   if (_positionStreamSubscription != null && !_positionStreamSubscription.isPaused) {
-  //     _positionStreamSubscription.pause();
-  //   }
-  // }
+  _stopLocationStreaming() {
+    if (_positionStreamSubscription != null && !_positionStreamSubscription.isPaused) {
+      _positionStreamSubscription.pause();
+    }
+  }
 
   Future<void> _sendNoti(String title, String body, tz.TZDateTime tzDateTime) async {
     final notiTitle = title;
@@ -270,11 +270,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _completeScreen() {
     Size size = MediaQuery.of(context).size;
 
-    // if (liveLocationEnabled) {
-    //   _startLocationStreaming();
-    // } else {
-    //   _stopLocationStreaming();
-    // }
+    if (liveLocationEnabled) {
+      _startLocationStreaming();
+    } else {
+      _stopLocationStreaming();
+    }
 
     return Scaffold(
         body: Container(
