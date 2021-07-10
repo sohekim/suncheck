@@ -1,5 +1,6 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +11,8 @@ import 'package:suncheck/model/record.dart';
 import 'package:suncheck/util/database_helper.dart';
 import 'package:suncheck/util/geolocator.dart';
 import 'package:weather/weather.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -91,6 +94,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  tz.TZDateTime _setNotiTime() {
+    tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+    final now = tz.TZDateTime.now(tz.local);
+    final after = now.add(Duration(minutes: 15));
+    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, after.hour, after.minute);
+
+    return scheduledDate;
+  }
+
   Widget _temp() {
     return Text(
       '${weather.temperature.celsius.toInt()}°C',
@@ -139,6 +152,36 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             }
           } else {
             await prefs.setString('start', DateTime.now().toString());
+            final notiTitle = "We see you chillin in the sun";
+            final notiDesc = "It’s been 15 mins. Don’t forget to turn it off  when you’re back!";
+            final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+            final result = await flutterLocalNotificationsPlugin
+                .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+                ?.requestPermissions(
+                  alert: true,
+                  badge: true,
+                  sound: true,
+                );
+
+            var ios = IOSNotificationDetails();
+            var detail = NotificationDetails(iOS: ios);
+
+            if (result) {
+              await flutterLocalNotificationsPlugin
+                  .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                  ?.deleteNotificationChannelGroup('id');
+
+              await flutterLocalNotificationsPlugin.zonedSchedule(
+                0,
+                notiTitle,
+                notiDesc,
+                _setNotiTime(),
+                detail,
+                androidAllowWhileIdle: true,
+                uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+                matchDateTimeComponents: DateTimeComponents.time,
+              );
+            }
           }
           setState(() {});
           isOn = !isOn;
