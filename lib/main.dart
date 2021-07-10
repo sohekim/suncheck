@@ -1,0 +1,34 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:suncheck/day_screen.dart';
+import 'package:suncheck/home_provider.dart';
+// import 'package:suncheck/home_screen.dart';
+import 'package:suncheck/home_screen.dart';
+import 'package:suncheck/util/utils.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        DefaultMaterialLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+      theme: const CupertinoThemeData(brightness: Brightness.light),
+      routes: {
+        kRouteDayScreen: (context) {
+          return DayScreen();
+        }
+      },
+      home: ChangeNotifierProvider<HomeProvider>(create: (_) => HomeProvider(), child: HomeScreen()),
+    );
+  }
+}
