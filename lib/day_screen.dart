@@ -7,12 +7,14 @@ import 'package:suncheck/util/utils.dart';
 class DayScreen extends StatelessWidget {
   int energy;
   DateTime date;
+  String location;
 
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> arguments = ModalRoute.of(context).settings.arguments;
     energy ??= arguments['energy'];
     date ??= arguments['date'];
+    location ??= arguments['location'];
 
     return Container(
       color: Color.fromRGBO(253, 251, 247, 1),
@@ -92,7 +94,7 @@ class DayScreen extends StatelessWidget {
             TextSpan(text: 'for '),
             TextSpan(text: '$energy', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' mins in\n'),
-            TextSpan(text: 'Seoul, Korea.', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: '$location.', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       );
@@ -113,7 +115,7 @@ class DayScreen extends StatelessWidget {
             TextSpan(text: 'for '),
             TextSpan(text: '$energy', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' mins in\n'),
-            TextSpan(text: 'Seoul, Korea.', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: '$location.', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       );
@@ -134,7 +136,7 @@ class DayScreen extends StatelessWidget {
             TextSpan(text: 'for '),
             TextSpan(text: '$energy', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' mins in\n'),
-            TextSpan(text: 'Seoul, Korea.', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: '$location.', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       );
@@ -155,7 +157,7 @@ class DayScreen extends StatelessWidget {
             TextSpan(text: 'for '),
             TextSpan(text: '$energy', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' mins in\n'),
-            TextSpan(text: 'Seoul, Korea.', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: '$location.', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       );

@@ -128,6 +128,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       onTap: () => Navigator.of(context).pushNamed(kRouteDayScreen, arguments: <String, dynamic>{
         'energy': record.energy,
         'date': record.date,
+        'location': record.location
       }),
       child: Container(
         width: (MediaQuery.of(context).size.width - 150) / 8,

@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Address address;
   DateTime initTime;
 
+  String addressText;
   bool databaseInitialized = false;
   bool preferecedInitialized = false;
   bool isOn = false;
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       List<Address> addresses =
           await Geocoder.local.findAddressesFromCoordinates(Coordinates(position.latitude, position.longitude));
       address = addresses.first;
-      print('${address.adminArea} ${address.countryName}');
+      addressText = '${address.adminArea}, ${address.countryName}';
 
       if (!databaseInitialized) {
         await DatabaseHelper.initDatabase();
@@ -126,11 +127,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             int newEnergy = duration.inMinutes;
             try {
               Record prevRecord = await DatabaseHelper.findRecordByDate(now);
-              await DatabaseHelper.updateRecord(
-                  Record(id: prevRecord.id, energy: prevRecord.energy + newEnergy, date: prevRecord.date));
+              await DatabaseHelper.updateRecord(Record(
+                  id: prevRecord.id,
+                  energy: prevRecord.energy + newEnergy,
+                  date: prevRecord.date,
+                  location: prevRecord.location));
               energySoFar = prevRecord.energy + newEnergy;
             } catch (exception) {
-              await DatabaseHelper.insertRecord(Record(date: DateTime.now(), energy: newEnergy));
+              await DatabaseHelper.insertRecord(Record(date: DateTime.now(), energy: newEnergy, location: addressText));
               energySoFar = newEnergy;
             }
           } else {

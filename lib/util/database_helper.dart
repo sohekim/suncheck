@@ -9,10 +9,10 @@ class DatabaseHelper {
 
   static Future<void> initDatabase() async {
     db = await openDatabase(
-      join(await getDatabasesPath(), 'suncheck_database8.db'),
+      join(await getDatabasesPath(), 'suncheck_database9.db'),
       onCreate: (db, version) {
         return db.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY, date TEXT, energy INTEGER)',
+          'CREATE TABLE records(id INTEGER PRIMARY KEY, date TEXT, energy INTEGER, location TEXT)',
         );
       },
       version: 1,
@@ -34,6 +34,7 @@ class DatabaseHelper {
         id: maps[i]['id'],
         date: DateTime.parse(maps[i]['date']),
         energy: maps[i]['energy'],
+        location: maps[i]['location'],
       );
     });
   }
@@ -54,6 +55,7 @@ class DatabaseHelper {
         id: maps[i]['id'],
         date: DateTime.parse(maps[i]['date']),
         energy: maps[i]['energy'],
+        location: maps[i]['location'],
       );
     });
   }
@@ -68,6 +70,7 @@ class DatabaseHelper {
         id: maps.first['id'],
         date: DateTime.parse(maps.first['date']),
         energy: maps.first['energy'],
+        location: maps.first['location'],
       );
     }
   }
