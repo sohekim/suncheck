@@ -90,7 +90,7 @@ class DayScreen extends StatelessWidget {
           children: <TextSpan>[
             TextSpan(text: '$weekday\n$month $day', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' $year,\nyou were enjoying the\n'),
-            TextSpan(text: ' Sun ', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: 'Sun ', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: 'for '),
             TextSpan(text: '$energy', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' mins in\n'),

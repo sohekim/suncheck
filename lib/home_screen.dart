@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:collection';
+import 'dart:math';
+
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoder/geocoder.dart';
@@ -31,12 +36,47 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   bool databaseInitialized = false;
   bool preferecedInitialized = false;
   bool isOn = false;
+  bool liveLocationEnabled = false;
+  bool mightBeWalking = false;
 
   Color circleColor = blueCircleColor;
   Color shadowColor = blueShadowColor;
   Color glowColor = blueGlowColor;
 
   int energySoFar = 0;
+
+  // Queue<_PositionItem> locationQueue = new Queue<_PositionItem>();
+  // StreamSubscription<Position> _positionStreamSubscription;
+
+  // Future<void> addLocationToQueue(_PositionItem _positionItem) async {
+  //   if (locationQueue.length == 10) {
+  //     locationQueue.removeFirst();
+  //   }
+  //   locationQueue.add(_positionItem);
+
+  //   _PositionItem firstPositionItem = locationQueue.first;
+  //   _PositionItem lastPositionItem = locationQueue.last;
+  //   int duration = firstPositionItem.time.difference(lastPositionItem.time).inMinutes;
+
+  //   var p = 0.017453292519943295;
+  //   var c = cos;
+  //   var a = 0.5 -
+  //       c((lastPositionItem.latitude - firstPositionItem.latitude) * p) / 2 +
+  //       c(firstPositionItem.latitude * p) *
+  //           c(lastPositionItem.latitude * p) *
+  //           (1 - c((lastPositionItem.longtitude - firstPositionItem.longtitude) * p)) /
+  //           2;
+  //   double distance = 12742 * asin(sqrt(a));
+  //   double speed = distance / duration;
+  //   if (0.08 < speed && speed < 0.086) {
+  //     mightBeWalking = true;
+  //     DateTime now = DateTime.now();
+  //     await _sendNoti('Hey, are you out in the sun?', 'If you are, remember to record your daily sun intake.',
+  //         tz.TZDateTime(tz.local, now.year, now.month, now.day, now.hour, now.minute + 1));
+  //   } else {
+  //     mightBeWalking = false;
+  //   }
+  // }
 
   Future<void> _initialization() async {
     DateTime now = DateTime.now();
@@ -94,16 +134,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  tz.TZDateTime _setNotiTime() {
-    tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
-    final now = tz.TZDateTime.now(tz.local);
-    final after = now.add(Duration(minutes: 15));
-    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, after.hour, after.minute);
-
-    return scheduledDate;
-  }
-
   Widget _temp() {
     return Text(
       '${weather.temperature.celsius.toInt()}°C',
@@ -152,36 +182,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             }
           } else {
             await prefs.setString('start', DateTime.now().toString());
-            final notiTitle = "We see you chillin in the sun";
-            final notiDesc = "It’s been 15 mins. Don’t forget to turn it off  when you’re back!";
-            final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-            final result = await flutterLocalNotificationsPlugin
-                .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-                ?.requestPermissions(
-                  alert: true,
-                  badge: true,
-                  sound: true,
-                );
-
-            var ios = IOSNotificationDetails();
-            var detail = NotificationDetails(iOS: ios);
-
-            if (result) {
-              await flutterLocalNotificationsPlugin
-                  .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-                  ?.deleteNotificationChannelGroup('id');
-
-              await flutterLocalNotificationsPlugin.zonedSchedule(
-                0,
-                notiTitle,
-                notiDesc,
-                _setNotiTime(),
-                detail,
-                androidAllowWhileIdle: true,
-                uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-                matchDateTimeComponents: DateTimeComponents.time,
-              );
-            }
+            tz.initializeTimeZones();
+            tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+            final now = tz.TZDateTime.now(tz.local);
+            final after = now.add(Duration(minutes: 15));
+            var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, after.hour, after.minute);
+            await _sendNoti("We see you chillin in the sun",
+                "It’s been 15 mins. Don’t forget to turn it off  when you’re back!", scheduledDate);
           }
           setState(() {});
           isOn = !isOn;
@@ -199,8 +206,76 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // _startLocationStreaming() {
+  //   if (_positionStreamSubscription == null) {
+  //     final positionStream = Geolocator.getPositionStream();
+  //     _positionStreamSubscription = positionStream.handleError((error) {
+  //       _positionStreamSubscription?.cancel();
+  //       _positionStreamSubscription = null;
+  //     }).listen((position) async {
+  //       await addLocationToQueue(_PositionItem(DateTime.now(), position.latitude, position.longitude));
+  //       setState(() {});
+  //     });
+  //     _positionStreamSubscription?.pause();
+  //   }
+
+  //   if (_positionStreamSubscription == null) {
+  //     return;
+  //   }
+
+  //   if (_positionStreamSubscription.isPaused) {
+  //     _positionStreamSubscription.resume();
+  //   }
+  // }
+
+  // _stopLocationStreaming() {
+  //   if (_positionStreamSubscription != null && !_positionStreamSubscription.isPaused) {
+  //     _positionStreamSubscription.pause();
+  //   }
+  // }
+
+  Future<void> _sendNoti(String title, String body, tz.TZDateTime tzDateTime) async {
+    final notiTitle = title;
+    final notiDesc = body;
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final result = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
+    var ios = IOSNotificationDetails();
+    var detail = NotificationDetails(iOS: ios);
+
+    if (result) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.deleteNotificationChannelGroup('id');
+
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        notiTitle,
+        notiDesc,
+        tzDateTime,
+        detail,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+    }
+  }
+
   Widget _completeScreen() {
     Size size = MediaQuery.of(context).size;
+
+    // if (liveLocationEnabled) {
+    //   _startLocationStreaming();
+    // } else {
+    //   _stopLocationStreaming();
+    // }
+
     return Scaffold(
         body: Container(
       color: Color.fromRGBO(253, 251, 247, 1),
@@ -209,6 +284,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         SizedBox(height: size.height * 0.08),
         _topBar(),
         SizedBox(height: size.height * 0.06),
+        Text(
+          '${address.adminArea}, ${address.countryName}',
+          style: TextStyle(fontSize: 14),
+        ),
+        SizedBox(height: size.height * 0.005),
         _temp(),
         SizedBox(height: size.height * 0.01),
         _weatherDetail(),
@@ -250,16 +330,60 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     ));
   }
 
+  Widget _locationServicePopup() {
+    return GestureDetector(
+      onTap: () async {
+        liveLocationEnabled = await showCupertinoModalPopup<bool>(
+          context: context,
+          builder: (BuildContext context) => CupertinoActionSheet(
+            title: const Text('Live Location Service'),
+            message: const Text(
+                'You’ll get notifications to record your sunlight intake when we think you are out walking.'),
+            actions: <CupertinoActionSheetAction>[
+              CupertinoActionSheetAction(
+                child: const Text('Turn On'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              CupertinoActionSheetAction(
+                child: const Text('Turn Off'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(liveLocationEnabled);
+              },
+            ),
+          ),
+        );
+        setState(() {});
+      },
+      child: Row(
+        children: [
+          liveLocationEnabled
+              ? Icon(Icons.location_on, color: getCircleColor(energySoFar))
+              : Icon(Icons.location_off, color: Color.fromRGBO(235, 228, 218, 1)),
+          Padding(
+            padding: const EdgeInsets.only(left: 5.0),
+            child: Text('Live Location'),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _topBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            '${address.adminArea}, ${address.countryName}',
-            style: TextStyle(fontSize: 14),
-          ),
+          _locationServicePopup(),
           TextButton(
               child: Text(
                 "Calendar",
@@ -295,4 +419,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
     );
   }
+}
+
+class _PositionItem {
+  _PositionItem(this.time, this.latitude, this.longtitude);
+
+  final DateTime time;
+  final double latitude;
+  final double longtitude;
 }
