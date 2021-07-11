@@ -1,6 +1,5 @@
-
+<p align="center"><img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/main.png" width="180"><p align="center">
 <h1 align="center"> Suncheck </h1> <br>
-
 <p align="center"><b>Your Personal Sun Tracker</b><p>
   
 <p align="center">Cross-Platofrm App Built With Flutter<p>
@@ -20,9 +19,6 @@
 홈 화면에 있는 동그라미 버튼으로 자신이 햇살을 받는 시간을 기록할 수 있습니다.
 15분이 경과할 때마다 버튼의 색상이 더 진하게 변경됩니다.
   
-  ![](name-of-giphy.gif)
-  
- <iframe src="https://giphy.com/embed/AvT3d4COrszx0r05Xg" width="222" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/AvT3d4COrszx0r05Xg">via GIPHY</a></p>
   
 > 걷는 움직임이 감지 되거나 앱을 키고 15 분 후 리마인더 notification 이 나갑니다. 
   
