@@ -45,6 +45,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   int energySoFar = 0;
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   // Queue<_PositionItem> locationQueue = new Queue<_PositionItem>();
   // StreamSubscription<Position> _positionStreamSubscription;
 
@@ -165,6 +167,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       child: GestureDetector(
         onTap: () async {
           if (isOn) {
+            if (flutterLocalNotificationsPlugin != null) await flutterLocalNotificationsPlugin.cancelAll();
             DateTime now = DateTime.now();
             Duration duration = now.difference(DateTime.parse(prefs.getString('start')));
             int newEnergy = duration.inMinutes;
@@ -237,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Future<void> _sendNoti(String title, String body, tz.TZDateTime tzDateTime) async {
     final notiTitle = title;
     final notiDesc = body;
-    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     final result = await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
