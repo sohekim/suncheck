@@ -15,6 +15,8 @@
 
 ## Main Functions
   <b>1. 햇살 기록하기</b>
+  
+<img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/first.png" width="600">
 
 홈 화면에 있는 동그라미 버튼으로 자신이 햇살을 받는 시간을 기록할 수 있습니다.
 15분이 경과할 때마다 버튼의 색상이 더 진하게 변경됩니다.
@@ -24,13 +26,24 @@
   
   <b>2. 기록 확인하기</b>
   
+  <img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/second.png" width="430">
+  
 달력 화면을 통해 나의 월별 햇살 일지를 보고 각 동그라미를 눌렀을 때 그날 받은 햇살, 위치, 비타민 D 와 전기량을 볼 수 있습니다.
 
-  <b>3. 내 위치의 날씨</b>
+  <b>3. 내 실시간 위치의 현재 날씨</b>
 
 나의 현재 위치에 따른 실시간 날씨를 볼 수 있습니다. 
  
 ## Implementation
+
+  <b> Serverless Cross-Platform Mobile App </b>
+  
+  - 하나의 코드 베이스로 android, ios 배포가 가능해 유지, 보수를 간단히 할 수 있습니다.
+  - 서버가 없기 때문에 기존 서버-클라이언트 아키텍처 보다 더욱 scalable, flexible, cost-efficient 합니다.
+  - 크로스 플랫폼 의 유연함과 비용 절감 의 목적으로 별도의 database 서버를 띄우는 대신 SQLite 를 사용해서 로컬에서 간단한 DB 를 구현했습니다. 
+
+
+  
 
 | Framework            | Client       |  Database                |   External API              |   
 | -------------------- |--------------|--------------------------| ---| 
