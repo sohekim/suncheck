@@ -1,10 +1,6 @@
-<p align="center"><img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/main.png" width="180"><p align="center">
-<h1 align="center"> Suncheck </h1> <br>
-<p align="center"><b>Your Personal Sun Tracker</b><p>
-  
-<p align="center">Cross-Platofrm App Built With Flutter<p>
+ <img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/design.png" width="1000">
 
-## About Suncheck
+## Why Suncheck
 당신은 하루에 해를 얼마나 보나요?
 
 > 코시국에 더욱 우울하거나 무기력한 건 햇살을 충분히 받지 못해서 일 수도 있어요.
@@ -100,5 +96,7 @@
   }
 
 ```
+  
+  <img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/wire.png" width="1000">
   
 
