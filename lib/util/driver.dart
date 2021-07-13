@@ -21,7 +21,7 @@ void main() async {
   await DatabaseHelper.insertRecord(three);
   await DatabaseHelper.insertRecord(four);
   await DatabaseHelper.insertRecord(five);
-  await DatabaseHelper.insertRecord(six);
-  await DatabaseHelper.insertRecord(seven);
-  await DatabaseHelper.insertRecord(eight);
+  // await DatabaseHelper.insertRecord(six);
+  // await DatabaseHelper.insertRecord(seven);
+  // await DatabaseHelper.insertRecord(eight);
 }

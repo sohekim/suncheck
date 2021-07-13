@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:suncheck/model/record.dart';
+import 'package:suncheck/util/button.dart';
+import 'package:suncheck/util/colors.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/util/database_helper.dart';
 
@@ -11,7 +13,8 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  String year = '2021', month = '07';
+  NumberFormat formatter = NumberFormat("00");
+  String year, month;
   List<Record> records;
   PageController _pageController;
 
@@ -23,30 +26,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: DateTime.now().month);
+    DateTime now = DateTime.now();
+    year = now.year.toString();
+    month = formatter.format(now.month).toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _completeScreen();
   }
 
   Widget _tabBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton(
-            child: Text(
-              "Close",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-            ),
-            style: ButtonStyle(
-                padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(25, 10, 25, 10)),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(235, 228, 218, 100)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)))),
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop()),
-      ],
+      children: [roundButton("Close", () => Navigator.of(context, rootNavigator: true).pop())],
     );
   }
 
   Widget _completeScreen() {
-    NumberFormat formatter = NumberFormat("00");
     return Scaffold(
         backgroundColor: Color.fromRGBO(253, 251, 247, 1),
         body: Padding(
@@ -70,6 +67,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           future: recordsByYearAndMonth(),
                           builder: (futureContext, snapshot) {
                             if (snapshot.hasError) {
+                              // sohee : error screen
                               return Center(child: Text('Ooops...'));
                             }
                             if (snapshot.connectionState == ConnectionState.done) {
@@ -107,6 +105,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 ],
                               );
                             }
+                            // sohee
                             return Center(child: Text('loading...'));
                           },
                         );
@@ -125,11 +124,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _dots(Record record) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(kRouteDayScreen, arguments: <String, dynamic>{
-        'energy': record.energy,
-        'date': record.date,
-        'location': record.location
-      }),
+      onTap: () => Navigator.of(context).pushNamed(kRouteDayScreen,
+          arguments: <String, dynamic>{'energy': record.energy, 'date': record.date, 'location': record.location}),
       child: Container(
         width: (MediaQuery.of(context).size.width - 150) / 8,
         height: (MediaQuery.of(context).size.width - 150) / 8,
@@ -138,22 +134,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
           color: getCircleColor(record.energy),
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: recordsByYearAndMonth(),
-      builder: (futureContext, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Ooops...'));
-        }
-        if (snapshot.connectionState == ConnectionState.done) {
-          return _completeScreen();
-        }
-        return Center(child: Text('loading...'));
-      },
     );
   }
 }
