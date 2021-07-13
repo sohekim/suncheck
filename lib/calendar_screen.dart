@@ -25,10 +25,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: DateTime.now().month);
     DateTime now = DateTime.now();
     year = now.year.toString();
-    month = formatter.format(now.month).toString();
+    int adjustMonth = now.month - 1;
+    _pageController = PageController(initialPage: adjustMonth);
+    month = formatter.format(adjustMonth).toString();
   }
 
   @override
@@ -62,7 +63,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     child: PageView.builder(
                       controller: _pageController,
                       itemBuilder: (context, index) {
-                        month = formatter.format(index).toString();
+                        year = (DateTime.now().year + (index ~/ 12)).toString();
+                        month = formatter.format((index % 12) + 1).toString();
                         return FutureBuilder(
                           future: recordsByYearAndMonth(),
                           builder: (futureContext, snapshot) {
@@ -80,17 +82,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Icon(
-                                        Icons.navigate_before_rounded,
-                                        size: 30,
-                                        color: Colors.grey[350],
+                                      GestureDetector(
+                                        onTap: () => _pageController.previousPage(
+                                            duration: Duration(milliseconds: 400), curve: Curves.easeIn),
+                                        child: Icon(
+                                          Icons.navigate_before_rounded,
+                                          size: 30,
+                                          color: Colors.grey[350],
+                                        ),
                                       ),
                                       Text(monthToName[month],
                                           style: TextStyle(fontSize: 38, fontWeight: FontWeight.w800)),
-                                      Icon(
-                                        Icons.navigate_next_rounded,
-                                        size: 30,
-                                        color: Colors.grey[350],
+                                      GestureDetector(
+                                        onTap: () => _pageController.nextPage(
+                                            duration: Duration(milliseconds: 400), curve: Curves.easeIn),
+                                        child: Icon(
+                                          Icons.navigate_next_rounded,
+                                          size: 30,
+                                          color: Colors.grey[350],
+                                        ),
                                       ),
                                     ],
                                   ),
