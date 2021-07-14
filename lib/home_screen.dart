@@ -8,11 +8,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:suncheck/calendar_screen.dart';
-import 'package:suncheck/util/colors.dart';
+import 'package:suncheck/util/styles.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/model/record.dart';
 import 'package:suncheck/util/database_helper.dart';
 import 'package:suncheck/util/geolocator.dart';
+import 'package:suncheck/widget/button.dart';
 import 'package:suncheck/widget/home_screen_widget.dart';
 import 'package:suncheck/widget/widgets.dart';
 import 'package:weather/weather.dart';
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool preferecedInitialized = false;
   bool isOn = false;
   int energySoFar = 0;
-
+  bool isCelsius = true;
   Color circleColor = blueCircleColor;
   Color shadowColor = blueShadowColor;
   Color glowColor = blueGlowColor;
@@ -86,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (futureContext, snapshot) {
         if (snapshot.hasError) {
           if (snapshot.error.toString() == 'Exception: location error') {
-            // sohee test
             return Scaffold(body: locationErrorScreen(context));
           } else {
             return Scaffold(body: apiErrorScreen(context));
@@ -115,7 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
         SizedBox(height: size.height * 0.04),
         myAddress(address),
         SizedBox(height: size.height * 0.005),
-        temperature(weather),
+        GestureDetector(
+            onTap: () {
+              setState(() {
+                isCelsius = !isCelsius;
+              });
+            },
+            child: temperature(weather, isCelsius)),
         SizedBox(height: size.height * 0.01),
         weatherDetail(weather),
         SizedBox(height: size.height * 0.03),
@@ -128,6 +134,36 @@ class _HomeScreenState extends State<HomeScreen> {
         lightbulbText(energySoFar),
       ]),
     ));
+  }
+
+  Widget topBar(Function onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+              onTap: () {
+                setState(() {
+                  isCelsius = !isCelsius;
+                });
+              },
+              child: RichText(
+                text: TextSpan(
+                  text: '°C',
+                  style: isCelsius ? midThinBlackText : midThinBlackText.copyWith(color: Colors.grey[400]),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: ' / °F',
+                      style: isCelsius ? midThinBlackText.copyWith(color: Colors.grey[400]) : midThinBlackText,
+                    )
+                  ],
+                ),
+              )),
+          roundButton("Calendar", onPressed),
+        ],
+      ),
+    );
   }
 
   Widget _circle() {

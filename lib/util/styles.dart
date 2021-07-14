@@ -55,3 +55,5 @@ Color getGlowColor(int energySoFar) {
     return redGlowColor;
   }
 }
+
+TextStyle midThinBlackText = TextStyle(fontSize: 18, fontWeight: FontWeight.w300, color: Colors.black);

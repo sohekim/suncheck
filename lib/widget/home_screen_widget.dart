@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
-import 'package:suncheck/widget/button.dart';
 import 'package:weather/weather.dart';
 
 Widget lightbulbText(int energySoFar) {
@@ -61,21 +60,9 @@ Widget weatherDetail(Weather weather) {
   ]);
 }
 
-Widget temperature(Weather weather) {
+Widget temperature(Weather weather, bool isCelsius) {
   return Text(
-    '${weather.temperature.celsius.toInt()}°C',
+    isCelsius ? '${weather.temperature.celsius.toInt()}°' : '${weather.temperature.fahrenheit.toInt()}°',
     style: TextStyle(fontSize: 50, fontWeight: FontWeight.w800),
-  );
-}
-
-Widget topBar(Function onPressed) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        roundButton("Calendar", onPressed),
-      ],
-    ),
   );
 }

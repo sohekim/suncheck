@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:suncheck/util/colors.dart';
+import 'package:suncheck/util/styles.dart';
 
 Widget roundButton(String name, Function onPressed) {
   return TextButton(

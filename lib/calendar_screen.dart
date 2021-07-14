@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:suncheck/model/record.dart';
-import 'package:suncheck/util/colors.dart';
+import 'package:suncheck/util/styles.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/util/database_helper.dart';
 import 'package:suncheck/widget/button.dart';

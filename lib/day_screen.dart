@@ -2,7 +2,7 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:suncheck/util/colors.dart';
+import 'package:suncheck/util/styles.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/widget/button.dart';
 
