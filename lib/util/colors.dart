@@ -16,6 +16,10 @@ const Color redCircleColor = Colors.red;
 const Color redShadowColor = Color.fromRGBO(255, 6, 6, 120);
 Color redGlowColor = Colors.redAccent[700];
 
+const Color scaffoldBackground = Color.fromRGBO(253, 251, 247, 1);
+
+const Color buttonColor = Color.fromRGBO(235, 228, 218, 1);
+
 Color getCircleColor(int energySoFar) {
   if (energySoFar < 15) {
     return blueCircleColor;
@@ -51,13 +55,3 @@ Color getGlowColor(int energySoFar) {
     return redGlowColor;
   }
 }
-
-const Color productRowDivider = Color(0xFFD9D9D9);
-
-const Color scaffoldBackground = Color(0xfff0f0f0);
-
-const Color searchBackground = Color(0xffe0e0e0);
-
-const Color searchCursorColor = Color.fromRGBO(0, 122, 255, 1);
-
-const Color searchIconColor = Color.fromRGBO(128, 128, 128, 1);

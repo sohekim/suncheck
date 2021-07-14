@@ -9,11 +9,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:suncheck/calendar_screen.dart';
 import 'package:suncheck/util/colors.dart';
-import 'package:suncheck/util/home_screen_widget.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/model/record.dart';
 import 'package:suncheck/util/database_helper.dart';
 import 'package:suncheck/util/geolocator.dart';
+import 'package:suncheck/widget/home_screen_widget.dart';
+import 'package:suncheck/widget/widgets.dart';
 import 'package:weather/weather.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -41,16 +42,18 @@ class _HomeScreenState extends State<HomeScreen> {
     DateTime now = DateTime.now();
 
     if (initTime == null || now.difference(initTime).inMinutes > 30) {
-      // 1. position
-      Position position = await determinePosition();
-      print('${position.longitude} ${position.latitude}');
+      Position position;
+      try {
+        position = await determinePosition();
+        print('${position.longitude} ${position.latitude}');
+      } catch (exception) {
+        throw Exception('location error');
+      }
 
-      // 2. weather
       WeatherFactory wf = new WeatherFactory(OPENWEATHER_API_KEY);
       weather = await wf.currentWeatherByLocation(position.latitude, position.longitude);
       print(weather);
 
-      // 3. address
       List<Address> addresses =
           await Geocoder.local.findAddressesFromCoordinates(Coordinates(position.latitude, position.longitude));
       address = addresses.first;
@@ -68,7 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
       try {
         Record prevRecord = await DatabaseHelper.findRecordByDate(DateTime.now());
         energySoFar = prevRecord.energy;
-      } catch (exception) {}
+      } catch (exception) {
+        // means there are no records found by date
+      }
 
       initTime = now;
     }
@@ -80,32 +85,21 @@ class _HomeScreenState extends State<HomeScreen> {
       future: _initialization(),
       builder: (futureContext, snapshot) {
         if (snapshot.hasError) {
-          return _errorScreen();
+          if (snapshot.error.toString() == 'Exception: location error') {
+            // sohee test
+            return Scaffold(body: locationErrorScreen(context));
+          } else {
+            return Scaffold(body: apiErrorScreen(context));
+          }
         }
         if (snapshot.connectionState == ConnectionState.done) {
           return _completeScreen();
         }
         if (initTime == null) {
-          return _loadingScreen();
+          return loadingScreen();
         }
         return _completeScreen();
       },
-    );
-  }
-
-  Widget _loadingScreen() {
-    return Container(
-      color: Color.fromRGBO(253, 251, 247, 1),
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-
-  Widget _errorScreen() {
-    // sohee : build error screen
-    return Center(
-      child: Text('Ooops Error!'),
     );
   }
 
@@ -113,12 +107,12 @@ class _HomeScreenState extends State<HomeScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         body: Container(
-      color: Color.fromRGBO(253, 251, 247, 1),
+      color: scaffoldBackground,
       width: size.width,
       child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-        SizedBox(height: size.height * 0.08),
+        SizedBox(height: size.height * 0.07),
         topBar(_navigateToDay),
-        SizedBox(height: size.height * 0.06),
+        SizedBox(height: size.height * 0.04),
         myAddress(address),
         SizedBox(height: size.height * 0.005),
         temperature(weather),
@@ -138,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _circle() {
     return AvatarGlow(
-      glowColor: isOn ? getGlowColor(energySoFar) : Color.fromRGBO(253, 251, 247, 1),
+      glowColor: isOn ? getGlowColor(energySoFar) : scaffoldBackground,
       endRadius: MediaQuery.of(context).size.width * 0.68 - 110,
       duration: Duration(milliseconds: 2000),
       repeat: true,

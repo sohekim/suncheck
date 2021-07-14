@@ -2,10 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:suncheck/model/record.dart';
-import 'package:suncheck/util/button.dart';
 import 'package:suncheck/util/colors.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/util/database_helper.dart';
+import 'package:suncheck/widget/button.dart';
+import 'package:suncheck/widget/widgets.dart';
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -46,7 +47,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _completeScreen() {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(253, 251, 247, 1),
+        backgroundColor: scaffoldBackground,
         body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
@@ -69,8 +70,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           future: recordsByYearAndMonth(),
                           builder: (futureContext, snapshot) {
                             if (snapshot.hasError) {
-                              // sohee : error screen
-                              return Center(child: Text('Ooops...'));
+                              return apiErrorScreen(context);
                             }
                             if (snapshot.connectionState == ConnectionState.done) {
                               return Column(
@@ -115,8 +115,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 ],
                               );
                             }
-                            // sohee
-                            return Center(child: Text('loading...'));
+                            return loadingScreen();
                           },
                         );
                       },

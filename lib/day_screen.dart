@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:suncheck/util/colors.dart';
 import 'package:suncheck/util/utils.dart';
+import 'package:suncheck/widget/button.dart';
 
 class DayScreen extends StatelessWidget {
   int energy;
@@ -18,27 +19,14 @@ class DayScreen extends StatelessWidget {
     location ??= arguments['location'];
 
     return Container(
-      color: Color.fromRGBO(253, 251, 247, 1),
+      color: scaffoldBackground,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(children: [
           SizedBox(height: MediaQuery.of(context).size.height * 0.085),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                  child: Text(
-                    "Close",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-                  ),
-                  style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(25, 10, 25, 10)),
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                      backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(235, 228, 218, 100)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)))),
-                  onPressed: () => Navigator.of(context, rootNavigator: true).pop()),
-            ],
+            children: [roundButton("Close", () => Navigator.of(context, rootNavigator: true).pop())],
           ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.03),
           Container(

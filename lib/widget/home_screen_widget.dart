@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
-import 'package:suncheck/util/button.dart';
+import 'package:suncheck/widget/button.dart';
 import 'package:weather/weather.dart';
 
 Widget lightbulbText(int energySoFar) {
@@ -41,17 +41,10 @@ Widget buttonText(bool isOn) {
         );
 }
 
-Widget address(Address address) {
-  return Text(
-    '${address.adminArea}, ${address.countryName}',
-    style: TextStyle(fontSize: 14),
-  );
-}
-
 Widget myAddress(Address address) {
   return Text(
     '${address.adminArea}, ${address.countryName}',
-    style: TextStyle(fontSize: 14),
+    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
   );
 }
 
