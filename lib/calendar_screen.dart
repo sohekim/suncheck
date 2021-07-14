@@ -53,7 +53,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.085),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.07),
                 _tabBar(),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.05,

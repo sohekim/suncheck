@@ -23,7 +23,7 @@ class DayScreen extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(children: [
-          SizedBox(height: MediaQuery.of(context).size.height * 0.085),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.07),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [roundButton("Close", () => Navigator.of(context, rootNavigator: true).pop())],
