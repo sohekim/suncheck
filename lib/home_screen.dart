@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Database database;
   SharedPreferences prefs;
   Weather weather;
@@ -39,10 +39,37 @@ class _HomeScreenState extends State<HomeScreen> {
   Color shadowColor = blueShadowColor;
   Color glowColor = blueGlowColor;
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        setState(() {});
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   Future<void> _initialization() async {
     DateTime now = DateTime.now();
-
-    if (initTime == null || now.difference(initTime).inMinutes > 30) {
+    print('init called');
+    if (initTime == null || now.difference(initTime).inMinutes > interval) {
       Position position;
       try {
         position = await determinePosition();
@@ -211,8 +238,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _navigateToDay() {
-    Route route = MaterialPageRoute(builder: (_) => CalendarScreen());
-    Navigator.of(context).push(route);
+  Future<void> _navigateToDay() async {
+    await Navigator.of(context).pushNamed(kRouteCalendarScreen);
+    setState(() {});
   }
 }

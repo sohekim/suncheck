@@ -35,17 +35,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return _completeScreen();
-  }
-
-  Widget _tabBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [roundButton("Close", () => Navigator.of(context, rootNavigator: true).pop())],
-    );
-  }
-
-  Widget _completeScreen() {
     return Scaffold(
         backgroundColor: scaffoldBackground,
         body: Padding(
@@ -129,6 +118,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 SizedBox(height: MediaQuery.of(context).size.height * 0.2)
               ],
             )));
+  }
+
+  Widget _tabBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [roundButton("Close", () => Navigator.of(context, rootNavigator: true).pop())],
+    );
   }
 
   Widget _dots(Record record) {

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:suncheck/calendar_screen.dart';
 import 'package:suncheck/day_screen.dart';
 import 'package:suncheck/home_screen.dart';
 import 'package:suncheck/util/utils.dart';
@@ -23,6 +24,9 @@ class MyApp extends StatelessWidget {
       routes: {
         kRouteDayScreen: (context) {
           return DayScreen();
+        },
+        kRouteCalendarScreen: (context) {
+          return CalendarScreen();
         }
       },
       home: HomeScreen(),

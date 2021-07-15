@@ -1,4 +1,7 @@
 const kRouteDayScreen = '/day';
+const kRouteCalendarScreen = '/calendar';
+
+const int interval = 30;
 
 const String OPENWEATHER_API_KEY = '9aca5ffce31dc14a13569843886d5c97';
 
