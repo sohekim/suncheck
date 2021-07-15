@@ -43,11 +43,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
-        print("app in resumed");
         setState(() {});
         break;
       case AppLifecycleState.paused:
-        print("app in paused");
         break;
       default:
         break;
@@ -68,7 +66,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> _initialization() async {
     DateTime now = DateTime.now();
-    print('init called');
     if (initTime == null || now.difference(initTime).inMinutes > interval) {
       Position position;
       try {
