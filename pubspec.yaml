@@ -34,6 +34,7 @@ dependencies:
   avatar_glow: ^2.0.1
   dotted_line: ^3.0.0
   jiffy: ^4.1.0
+  provider: ^5.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

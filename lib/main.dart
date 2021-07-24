@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:suncheck/calendar_screen.dart';
 import 'package:suncheck/day_screen.dart';
 import 'package:suncheck/home_screen.dart';
+import 'package:suncheck/model/home_model.dart';
 import 'package:suncheck/util/utils.dart';
 
 void main() {
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
           return CalendarScreen();
         }
       },
-      home: HomeScreen(),
+      home: ChangeNotifierProvider<HomeModel>(create: (context) => HomeModel(), child: HomeScreen()),
     );
   }
 }

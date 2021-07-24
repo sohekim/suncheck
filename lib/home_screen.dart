@@ -5,9 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:suncheck/calendar_screen.dart';
+import 'package:suncheck/model/home_model.dart';
 import 'package:suncheck/util/styles.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/model/record.dart';
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Color circleColor = blueCircleColor;
   Color shadowColor = blueShadowColor;
   Color glowColor = blueGlowColor;
+  Timer _timer;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -97,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Record prevRecord = await DatabaseHelper.findRecordByDate(DateTime.now());
         energySoFar = prevRecord.energy;
       } catch (exception) {
-        // means there are no records found by date
+        // there is no record found by date
       }
 
       initTime = now;
@@ -109,6 +111,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return FutureBuilder(
       future: _initialization(),
       builder: (futureContext, snapshot) {
+        if (initTime == null) {
+          return loadingScreen();
+        }
+
         if (snapshot.hasError) {
           if (snapshot.error.toString() == 'Exception: location error') {
             return Scaffold(body: locationErrorScreen(context));
@@ -116,18 +122,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             return Scaffold(body: apiErrorScreen(context));
           }
         }
+
         if (snapshot.connectionState == ConnectionState.done) {
           return _completeScreen();
         }
-        if (initTime == null) {
-          return loadingScreen();
-        }
+
         return _completeScreen();
       },
     );
   }
 
   Widget _completeScreen() {
+    final _model = Provider.of<HomeModel>(context, listen: false);
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         body: Container(
@@ -149,13 +155,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         SizedBox(height: size.height * 0.01),
         weatherDetail(weather),
         SizedBox(height: size.height * 0.03),
-        _circle(),
+        _circle(_model),
         SizedBox(height: size.height * 0.03),
         buttonText(isOn),
         SizedBox(height: size.height * 0.05),
-        energyText(energySoFar),
-        SizedBox(height: size.height * 0.01),
-        lightbulbText(energySoFar),
+        Consumer<HomeModel>(
+          builder: (context, value, child) => Column(
+            children: [energyText(energySoFar), SizedBox(height: size.height * 0.01), lightbulbText(energySoFar)],
+          ),
+        ),
       ]),
     ));
   }
@@ -184,55 +192,58 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ],
                 ),
               )),
-          roundButton("Calendar", onPressed),
+          roundButton('Calendar', onPressed),
         ],
       ),
     );
   }
 
-  Widget _circle() {
-    return AvatarGlow(
-      glowColor: isOn ? getGlowColor(energySoFar) : scaffoldBackground,
-      endRadius: MediaQuery.of(context).size.width * 0.68 - 110,
-      duration: Duration(milliseconds: 2000),
-      repeat: true,
-      showTwoGlows: false,
-      repeatPauseDuration: Duration(milliseconds: 100),
-      child: GestureDetector(
-        onTap: () async {
-          if (isOn) {
-            DateTime now = DateTime.now();
-            Duration duration = now.difference(DateTime.parse(prefs.getString('start')));
-            int newEnergy = duration.inMinutes;
-            try {
-              Record prevRecord = await DatabaseHelper.findRecordByDate(now);
-              await DatabaseHelper.updateRecord(Record(
-                  id: prevRecord.id,
-                  energy: prevRecord.energy + newEnergy,
-                  date: prevRecord.date,
-                  location: prevRecord.location));
-              energySoFar = prevRecord.energy + newEnergy;
-            } catch (exception) {
-              await DatabaseHelper.insertRecord(Record(date: DateTime.now(), energy: newEnergy, location: addressText));
-              energySoFar = newEnergy;
+  Widget _circle(_model) {
+    DateTime now;
+    return Consumer<HomeModel>(builder: (context, value, child) {
+      return AvatarGlow(
+        glowColor: isOn ? getGlowColor(energySoFar) : scaffoldBackground,
+        endRadius: MediaQuery.of(context).size.width * 0.68 - 110,
+        duration: Duration(milliseconds: 2000),
+        repeat: true,
+        showTwoGlows: false,
+        repeatPauseDuration: Duration(milliseconds: 100),
+        child: GestureDetector(
+          onTap: () async {
+            if (isOn) {
+              _timer.cancel();
+              _model.reset();
+            } else {
+              _timer = Timer.periodic(Duration(seconds: 3), (timer) async {
+                now = DateTime.now();
+                try {
+                  Record prevRecord = await DatabaseHelper.findRecordByDate(now);
+                  energySoFar = prevRecord.energy + 1;
+                  await DatabaseHelper.updateRecord(Record(
+                      id: prevRecord.id, energy: energySoFar, date: prevRecord.date, location: prevRecord.location));
+                } catch (exception) {
+                  await DatabaseHelper.insertRecord(Record(date: DateTime.now(), energy: 1, location: addressText));
+                  energySoFar = 1;
+                }
+                _model.homeCounter = 1;
+              });
             }
-          } else {
-            await prefs.setString('start', DateTime.now().toString());
-          }
-          setState(() {});
-          isOn = !isOn;
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.68,
-          height: MediaQuery.of(context).size.width * 0.68,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: getCircleColor(energySoFar),
-            boxShadow: isOn ? [BoxShadow(color: getShadowColor(energySoFar), blurRadius: 40, spreadRadius: 27)] : null,
+            setState(() {});
+            isOn = !isOn;
+          },
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.68,
+            height: MediaQuery.of(context).size.width * 0.68,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: getCircleColor(energySoFar),
+              boxShadow:
+                  isOn ? [BoxShadow(color: getShadowColor(energySoFar), blurRadius: 40, spreadRadius: 27)] : null,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Future<void> _navigateToDay() async {
