@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool preferecedInitialized = false;
   bool isOn = false;
   int energySoFar = 0;
-  bool isCelsius = true;
   Color circleColor = blueCircleColor;
   Color shadowColor = blueShadowColor;
   Color glowColor = blueGlowColor;
@@ -94,6 +93,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         prefs = await SharedPreferences.getInstance();
         preferecedInitialized = true;
       }
+      if (prefs.getBool('isCelsius') == null) {
+        prefs.setBool('isCelsius', true);
+      }
 
       try {
         Record prevRecord = await DatabaseHelper.findRecordByDate(DateTime.now());
@@ -146,12 +148,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         myAddress(address),
         SizedBox(height: size.height * 0.005),
         GestureDetector(
-            onTap: () {
-              setState(() {
-                isCelsius = !isCelsius;
+            onTap: () async {
+              setState(() async {
+                await prefs.setBool('isCelsius', !prefs.getBool('isCelsius'));
               });
             },
-            child: temperature(weather, isCelsius)),
+            child: temperature(weather, prefs.getBool('isCelsius'))),
         SizedBox(height: size.height * 0.01),
         weatherDetail(weather),
         SizedBox(height: size.height * 0.03),
@@ -175,19 +177,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-              onTap: () {
-                setState(() {
-                  isCelsius = !isCelsius;
+              onTap: () async {
+                setState(() async {
+                  await prefs.setBool('isCelsius', !prefs.getBool('isCelsius'));
                 });
               },
               child: RichText(
                 text: TextSpan(
                   text: '°C',
-                  style: isCelsius ? midThinBlackText : midThinBlackText.copyWith(color: Colors.grey[400]),
+                  style: prefs.getBool('isCelsius')
+                      ? midThinBlackText
+                      : midThinBlackText.copyWith(color: Colors.grey[400]),
                   children: <TextSpan>[
                     TextSpan(
                       text: ' / °F',
-                      style: isCelsius ? midThinBlackText.copyWith(color: Colors.grey[400]) : midThinBlackText,
+                      style: prefs.getBool('isCelsius')
+                          ? midThinBlackText.copyWith(color: Colors.grey[400])
+                          : midThinBlackText,
                     )
                   ],
                 ),
