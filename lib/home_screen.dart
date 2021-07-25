@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-     _timer.cancel();
+    _timer.cancel();
     super.dispose();
   }
 
@@ -123,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
       if (!preferecedInitialized) {
         prefs = await SharedPreferences.getInstance();
+        prefs.setBool('onBoard', true);
         preferecedInitialized = true;
       }
       if (prefs.getBool('isCelsius') == null) {
@@ -145,6 +146,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return FutureBuilder(
       future: _initialization(),
       builder: (futureContext, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          loadingScreen();
+        }
+
         if (snapshot.hasError) {
           if (snapshot.error.toString() == 'Exception: location error') {
             return Scaffold(body: locationErrorScreen(context));
@@ -160,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (snapshot.connectionState == ConnectionState.done) {
           return _completeScreen();
         }
-        // sohee: loading 화면 check
+
         return _completeScreen();
       },
     );
@@ -232,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ],
                 ),
               )),
-          roundButton('Records', onPressed),
+          roundButton('Archive', onPressed),
         ],
       ),
     );

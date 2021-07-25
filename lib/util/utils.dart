@@ -1,5 +1,6 @@
 const kRouteDayScreen = '/day';
 const kRouteCalendarScreen = '/calendar';
+const kRouteHomeScreen = '/home';
 
 const int interval = 30;
 
