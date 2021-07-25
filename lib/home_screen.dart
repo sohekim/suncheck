@@ -45,8 +45,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.resumed:
         setState(() {});
+        print("app in resumed");
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
         break;
       case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
         break;
       default:
         break;
@@ -113,10 +121,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return FutureBuilder(
       future: _initialization(),
       builder: (futureContext, snapshot) {
-        if (initTime == null) {
-          return loadingScreen();
-        }
-
         if (snapshot.hasError) {
           if (snapshot.error.toString() == 'Exception: location error') {
             return Scaffold(body: locationErrorScreen(context));
@@ -125,10 +129,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           }
         }
 
+        if (initTime == null) {
+          return loadingScreen();
+        }
+
         if (snapshot.connectionState == ConnectionState.done) {
           return _completeScreen();
         }
-
+        // sohee: loading 화면 check
         return _completeScreen();
       },
     );
@@ -149,8 +157,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         SizedBox(height: size.height * 0.005),
         GestureDetector(
             onTap: () async {
-              setState(() async {
-                await prefs.setBool('isCelsius', !prefs.getBool('isCelsius'));
+              await prefs.setBool('isCelsius', !prefs.getBool('isCelsius'));
+              setState(() {
+                prefs.getBool('isCelsius');
               });
             },
             child: temperature(weather, prefs.getBool('isCelsius'))),
@@ -172,14 +181,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Widget topBar(Function onPressed) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.045),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
               onTap: () async {
-                setState(() async {
-                  await prefs.setBool('isCelsius', !prefs.getBool('isCelsius'));
+                await prefs.setBool('isCelsius', !prefs.getBool('isCelsius'));
+                setState(() {
+                  prefs.getBool('isCelsius');
                 });
               },
               child: RichText(
@@ -198,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ],
                 ),
               )),
-          roundButton('Calendar', onPressed),
+          roundButton('Records', onPressed),
         ],
       ),
     );
@@ -222,6 +232,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             } else {
               _timer = Timer.periodic(Duration(seconds: 3), (timer) async {
                 now = DateTime.now();
+                // print('-----------------------------------------');
+                // print(now.toString());
                 try {
                   Record prevRecord = await DatabaseHelper.findRecordByDate(now);
                   energySoFar = prevRecord.energy + 1;
@@ -231,9 +243,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   await DatabaseHelper.insertRecord(Record(date: DateTime.now(), energy: 1, location: addressText));
                   energySoFar = 1;
                 }
+                // print('updated db');
                 _model.homeCounter = 1;
               });
             }
+            // print('call setstate');
             setState(() {});
             isOn = !isOn;
           },
