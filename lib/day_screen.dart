@@ -21,7 +21,7 @@ class DayScreen extends StatelessWidget {
     return Container(
       color: scaffoldBackground,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.045),
         child: Column(children: [
           SizedBox(height: MediaQuery.of(context).size.height * 0.07),
           Row(

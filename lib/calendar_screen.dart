@@ -35,21 +35,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
         backgroundColor: scaffoldBackground,
         body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: size.width * 0.045),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.07),
+                SizedBox(height: size.height * 0.07),
                 _tabBar(),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: size.height * 0.05,
                 ),
                 Expanded(
                   child: Container(
-                    width: MediaQuery.of(context).size.width - 150,
+                    width: size.width * 0.68,
                     child: PageView.builder(
                       controller: _pageController,
                       itemBuilder: (context, index) {
@@ -66,7 +67,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 children: [
                                   Text(
                                     year,
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
+                                    style: TextStyle(fontSize: size.width * 0.042, fontWeight: FontWeight.w300),
                                   ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,7 +82,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                         ),
                                       ),
                                       Text(monthToName[month],
-                                          style: TextStyle(fontSize: 38, fontWeight: FontWeight.w800)),
+                                          style: TextStyle(fontSize: size.width * 0.088, fontWeight: FontWeight.w800)),
                                       GestureDetector(
                                         onTap: () => _pageController.nextPage(
                                             duration: Duration(milliseconds: 400), curve: Curves.easeIn),
@@ -115,7 +116,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   'Tab To Check!',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.2)
+                SizedBox(height: size.height * 0.2)
               ],
             )));
   }
@@ -128,12 +129,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _dots(Record record) {
+    Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => Navigator.of(context).pushNamed(kRouteDayScreen,
           arguments: <String, dynamic>{'energy': record.energy, 'date': record.date, 'location': record.location}),
       child: Container(
-        width: (MediaQuery.of(context).size.width - 150) / 8,
-        height: (MediaQuery.of(context).size.width - 150) / 8,
+        width: (size.width - 150) / 8,
+        height: (size.width - 150) / 8,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: getCircleColor(record.energy),
