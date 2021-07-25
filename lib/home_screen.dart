@@ -41,23 +41,45 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Timer _timer;
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
+        resumed();
         setState(() {});
-        print("app in resumed");
-        break;
-      case AppLifecycleState.inactive:
-        print("app in inactive");
         break;
       case AppLifecycleState.paused:
-        print("app in paused");
-        break;
-      case AppLifecycleState.detached:
-        print("app in detached");
+        await pause();
         break;
       default:
         break;
+    }
+  }
+
+  Future<void> pause() async {
+    if (isOn) {
+      _timer.cancel();
+      await prefs.setString('start', DateTime.now().toString());
+    }
+  }
+
+  Future<void> resumed() async {
+    if (isOn) {
+      DateTime now = DateTime.now();
+      Duration duration = now.difference(DateTime.parse(prefs.getString('start')));
+      int newEnergy = duration.inMinutes;
+      try {
+        Record prevRecord = await DatabaseHelper.findRecordByDate(now);
+        await DatabaseHelper.updateRecord(Record(
+            id: prevRecord.id,
+            energy: prevRecord.energy + newEnergy,
+            date: prevRecord.date,
+            location: prevRecord.location));
+        energySoFar = prevRecord.energy + newEnergy;
+      } catch (exception) {
+        await DatabaseHelper.insertRecord(Record(date: DateTime.now(), energy: newEnergy, location: addressText));
+        energySoFar = newEnergy;
+      }
+      startTimer(Provider.of<HomeModel>(context, listen: false));
     }
   }
 
@@ -70,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+     _timer.cancel();
     super.dispose();
   }
 
@@ -77,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     DateTime now = DateTime.now();
     if (initTime == null || now.difference(initTime).inMinutes > interval) {
       Position position;
+
       try {
         position = await determinePosition();
         print('${position.longitude} ${position.latitude}');
@@ -214,8 +238,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  Future<void> startTimer(HomeModel _model) async {
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) async {
+      DateTime now = DateTime.now();
+      try {
+        Record prevRecord = await DatabaseHelper.findRecordByDate(now);
+        energySoFar = prevRecord.energy + 1;
+        await DatabaseHelper.updateRecord(
+            Record(id: prevRecord.id, energy: energySoFar, date: prevRecord.date, location: prevRecord.location));
+      } catch (exception) {
+        await DatabaseHelper.insertRecord(Record(date: now, energy: 1, location: addressText));
+        energySoFar = 1;
+      }
+      _model.homeCounter = 1;
+    });
+  }
+
   Widget _circle(_model) {
-    DateTime now;
     return Consumer<HomeModel>(builder: (context, value, child) {
       return AvatarGlow(
         glowColor: isOn ? getGlowColor(energySoFar) : scaffoldBackground,
@@ -230,24 +269,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               _timer.cancel();
               _model.reset();
             } else {
-              _timer = Timer.periodic(Duration(seconds: 3), (timer) async {
-                now = DateTime.now();
-                // print('-----------------------------------------');
-                // print(now.toString());
-                try {
-                  Record prevRecord = await DatabaseHelper.findRecordByDate(now);
-                  energySoFar = prevRecord.energy + 1;
-                  await DatabaseHelper.updateRecord(Record(
-                      id: prevRecord.id, energy: energySoFar, date: prevRecord.date, location: prevRecord.location));
-                } catch (exception) {
-                  await DatabaseHelper.insertRecord(Record(date: DateTime.now(), energy: 1, location: addressText));
-                  energySoFar = 1;
-                }
-                // print('updated db');
-                _model.homeCounter = 1;
-              });
+              startTimer(_model);
             }
-            // print('call setstate');
             setState(() {});
             isOn = !isOn;
           },
