@@ -17,7 +17,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
 
     PageDecoration pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
-      bodyTextStyle:  TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, height: 1.3),
+      bodyTextStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300, height: 1.3),
       imagePadding: EdgeInsets.zero,
       contentMargin: EdgeInsets.fromLTRB(size.width * 0.1, size.height * 0.03, size.width * 0.1, 0),
       bodyFlex: 4,
@@ -30,7 +30,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
 
     Widget _buildFullscrenImage() {
       return Image.asset(
-        'assets/sungirl.png',
+        'assets/302.png',
         fit: BoxFit.cover,
         height: double.infinity,
         width: double.infinity,
@@ -41,43 +41,37 @@ class _OnboardScreenState extends State<OnboardScreen> {
     return IntroductionScreen(
       key: introKey,
       globalBackgroundColor: Colors.white,
-
       pages: [
         PageViewModel(
           title: "Let's get started!",
           body: "Your Personal Sun Tracker",
           image: _buildFullscrenImage(),
           decoration: pageDecoration.copyWith(
-             titleTextStyle: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w800),
-             bodyTextStyle:  TextStyle(fontSize: 16.0, fontWeight: FontWeight.w300),
+            titleTextStyle: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w800),
             fullScreen: true,
-            bodyFlex: 5,
-            imageFlex: 3,
+            bodyFlex: 3,
+            imageFlex: 4,
           ),
         ),
-
         PageViewModel(
             title: "Are you going out?",
             body:
-                "Simply tap on the circle to start recording your sun intake. \n\nIf you are back indoor,\ntap on it again to turn it off.",
+                "Simply tap on the circle to start recording your sun intake.\n\nIf you are back indoors,\ntap on it again to turn it off.",
             image: Container(
               child: Image.asset('tap.png'),
             ),
             decoration: pageDecoration),
-
         PageViewModel(
             title: "Blue To Red",
-            body:
-                "The color changes every \n15 mintues of your sun intake.",
+            body: "The color changes every \n15 mintues of your sun intake.",
             image: Container(
               child: Image.asset('fifteen.png'),
             ),
             decoration: pageDecoration),
-
         PageViewModel(
             title: "Archive",
             body:
-                "Each circle represents the day you recorded.\n\nClick on the circle to see how much sunlight you got that day.\n\nYour data is stored as you go. ",
+                "Each circle represents the day you recorded.\n\nClick on the circle to see how much sunlight you got that day.",
             image: Container(
               child: Image.asset('calendar.png'),
             ),

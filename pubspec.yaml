@@ -62,12 +62,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - fullscreen.jpg
     - calendar.png
-    - day.png
     - fifteen.png
-    - sungirl.png
     - tap.png
+    - 302.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
