@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   DateTime initTime;
   String addressText;
   bool databaseInitialized = false;
-  bool preferecedInitialized = false;
+  bool preferredInitialized = false;
   bool isOn = false;
   int energySoFar = 0;
   Color circleColor = blueCircleColor;
@@ -121,10 +121,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         await DatabaseHelper.initDatabase();
         databaseInitialized = true;
       }
-      if (!preferecedInitialized) {
+      if (!preferredInitialized) {
         prefs = await SharedPreferences.getInstance();
         prefs.setBool('onBoard', true);
-        preferecedInitialized = true;
+        preferredInitialized = true;
       }
       if (prefs.getBool('isCelsius') == null) {
         prefs.setBool('isCelsius', true);

@@ -28,7 +28,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
       Navigator.of(context).pushNamed(kRouteHomeScreen);
     }
 
-    Widget _buildFullscrenImage() {
+    Widget _buildFullscreenImage() {
       return Image.asset(
         'assets/302.png',
         fit: BoxFit.cover,
@@ -45,7 +45,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
         PageViewModel(
           title: "Let's get started!",
           body: "Your Personal Sun Tracker",
-          image: _buildFullscrenImage(),
+          image: _buildFullscreenImage(),
           decoration: pageDecoration.copyWith(
             titleTextStyle: TextStyle(fontSize: 30.0, fontWeight: FontWeight.w800),
             fullScreen: true,
