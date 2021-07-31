@@ -63,7 +63,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
             decoration: pageDecoration),
         PageViewModel(
             title: "Blue To Red",
-            body: "The color changes every \n15 mintues of your sun intake.",
+            body: "The color changes every \n15 minutes of your sun intake.",
             image: Container(
               child: Image.asset('fifteen.png'),
             ),
