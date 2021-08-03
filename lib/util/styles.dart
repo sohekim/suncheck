@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
 
-const TextStyle productRowTotal = TextStyle(
-  color: Color.fromRGBO(0, 0, 0, 0.8),
-  fontSize: 18,
-  fontStyle: FontStyle.normal,
-  fontWeight: FontWeight.bold,
-);
-
 const Color blueCircleColor = Colors.lightBlue;
 const Color blueShadowColor = Color.fromRGBO(60, 183, 233, 120);
 Color blueGlowColor = Colors.blueAccent[700];
@@ -22,6 +15,10 @@ Color orangeGlowColor = Colors.orangeAccent[700];
 const Color redCircleColor = Colors.red;
 const Color redShadowColor = Color.fromRGBO(255, 6, 6, 120);
 Color redGlowColor = Colors.redAccent[700];
+
+const Color scaffoldBackground = Color.fromRGBO(253, 251, 247, 1);
+
+const Color buttonColor = Color.fromRGBO(235, 228, 218, 1);
 
 Color getCircleColor(int energySoFar) {
   if (energySoFar < 15) {
@@ -59,31 +56,4 @@ Color getGlowColor(int energySoFar) {
   }
 }
 
-const Color productRowDivider = Color(0xFFD9D9D9);
-
-const Color scaffoldBackground = Color(0xfff0f0f0);
-
-const Color searchBackground = Color(0xffe0e0e0);
-
-const Color searchCursorColor = Color.fromRGBO(0, 122, 255, 1);
-
-const Color searchIconColor = Color.fromRGBO(128, 128, 128, 1);
-
-const kRouteDayScreen = '/day';
-
-const String OPENWEATHER_API_KEY = '9aca5ffce31dc14a13569843886d5c97';
-
-Map<String, String> monthToName = {
-  '01': 'January',
-  '02': 'February',
-  '03': 'March',
-  '04': 'April',
-  '05': 'May',
-  '06': 'June',
-  '07': 'July',
-  '08': 'August',
-  '09': 'September',
-  '10': 'October',
-  '11': 'November',
-  '12': 'December'
-};
+TextStyle midThinBlackText = TextStyle(fontSize: 18, fontWeight: FontWeight.w300, color: Colors.black);

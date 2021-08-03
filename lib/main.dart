@@ -1,31 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suncheck/calendar_screen.dart';
 import 'package:suncheck/day_screen.dart';
-import 'package:suncheck/home_provider.dart';
 import 'package:suncheck/home_screen.dart';
+import 'package:suncheck/model/home_model.dart';
+import 'package:suncheck/onboard_screen.dart';
 import 'package:suncheck/util/utils.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  _initNotiSetting();
-  runApp(MyApp());
-}
+bool isViewed;
 
-void _initNotiSetting() async {
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  final initSettingsIOS = IOSInitializationSettings(
-    requestSoundPermission: false,
-    requestBadgePermission: true,
-    requestAlertPermission: true,
-  );
-  final initSettings = InitializationSettings(
-    iOS: initSettingsIOS,
-  );
-  await flutterLocalNotificationsPlugin.initialize(
-    initSettings,
-  );
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (prefs.getBool('onBoard') == null)
+    isViewed = false;
+  else
+    isViewed = prefs.getBool('onBoard');
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -42,9 +35,17 @@ class MyApp extends StatelessWidget {
       routes: {
         kRouteDayScreen: (context) {
           return DayScreen();
+        },
+        kRouteCalendarScreen: (context) {
+          return CalendarScreen();
+        },
+        kRouteHomeScreen: (context) {
+          return ChangeNotifierProvider<HomeModel>(create: (context) => HomeModel(), child: HomeScreen());
         }
       },
-      home: ChangeNotifierProvider<HomeProvider>(create: (_) => HomeProvider(), child: HomeScreen()),
+      home: isViewed
+          ? ChangeNotifierProvider<HomeModel>(create: (context) => HomeModel(), child: HomeScreen())
+          : OnboardScreen(),
     );
   }
 }

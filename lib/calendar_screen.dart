@@ -2,8 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:suncheck/model/record.dart';
+import 'package:suncheck/util/styles.dart';
 import 'package:suncheck/util/utils.dart';
 import 'package:suncheck/util/database_helper.dart';
+import 'package:suncheck/widget/button.dart';
+import 'package:suncheck/widget/widgets.dart';
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -11,7 +14,8 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  String year = '2021', month = '07';
+  NumberFormat formatter = NumberFormat("00");
+  String year, month;
   List<Record> records;
   PageController _pageController;
 
@@ -22,77 +26,71 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: DateTime.now().month);
+    DateTime now = DateTime.now();
+    year = now.year.toString();
+    int adjustMonth = now.month - 1;
+    _pageController = PageController(initialPage: adjustMonth);
+    month = formatter.format(adjustMonth).toString();
   }
 
-  Widget _tabBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton(
-            child: Text(
-              "Close",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-            ),
-            style: ButtonStyle(
-                padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(25, 10, 25, 10)),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(235, 228, 218, 100)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)))),
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop()),
-      ],
-    );
-  }
-
-  Widget _completeScreen() {
-    NumberFormat formatter = NumberFormat("00");
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-        backgroundColor: Color.fromRGBO(253, 251, 247, 1),
+        backgroundColor: scaffoldBackground,
         body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: size.width * 0.045),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.085),
+                SizedBox(height: size.height * 0.07),
                 _tabBar(),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: size.height * 0.05,
                 ),
                 Expanded(
                   child: Container(
-                    width: MediaQuery.of(context).size.width - 150,
+                    width: size.width * 0.68,
                     child: PageView.builder(
                       controller: _pageController,
                       itemBuilder: (context, index) {
-                        month = formatter.format(index).toString();
+                        year = (DateTime.now().year + (index ~/ 12)).toString();
+                        month = formatter.format((index % 12) + 1).toString();
                         return FutureBuilder(
                           future: recordsByYearAndMonth(),
                           builder: (futureContext, snapshot) {
                             if (snapshot.hasError) {
-                              return Center(child: Text('Ooops...'));
+                              return apiErrorScreen(context);
                             }
                             if (snapshot.connectionState == ConnectionState.done) {
                               return Column(
                                 children: [
                                   Text(
                                     year,
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
+                                    style: TextStyle(fontSize: size.width * 0.042, fontWeight: FontWeight.w300),
                                   ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Icon(
-                                        Icons.navigate_before_rounded,
-                                        size: 30,
-                                        color: Colors.grey[350],
+                                      GestureDetector(
+                                        onTap: () => _pageController.previousPage(
+                                            duration: Duration(milliseconds: 400), curve: Curves.easeIn),
+                                        child: Icon(
+                                          Icons.navigate_before_rounded,
+                                          size: 30,
+                                          color: Colors.grey[350],
+                                        ),
                                       ),
                                       Text(monthToName[month],
-                                          style: TextStyle(fontSize: 38, fontWeight: FontWeight.w800)),
-                                      Icon(
-                                        Icons.navigate_next_rounded,
-                                        size: 30,
-                                        color: Colors.grey[350],
+                                          style: TextStyle(fontSize: size.width * 0.088, fontWeight: FontWeight.w800)),
+                                      GestureDetector(
+                                        onTap: () => _pageController.nextPage(
+                                            duration: Duration(milliseconds: 400), curve: Curves.easeIn),
+                                        child: Icon(
+                                          Icons.navigate_next_rounded,
+                                          size: 30,
+                                          color: Colors.grey[350],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -107,7 +105,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 ],
                               );
                             }
-                            return Center(child: Text('loading...'));
+                            return loadingScreen();
                           },
                         );
                       },
@@ -118,42 +116,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   'Tab To Check!',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.2)
+                SizedBox(height: size.height * 0.2)
               ],
             )));
   }
 
+  Widget _tabBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [roundButton("Close", () => Navigator.of(context, rootNavigator: true).pop())],
+    );
+  }
+
   Widget _dots(Record record) {
+    Size size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(kRouteDayScreen, arguments: <String, dynamic>{
-        'energy': record.energy,
-        'date': record.date,
-        'location': record.location
-      }),
+      onTap: () => Navigator.of(context).pushNamed(kRouteDayScreen,
+          arguments: <String, dynamic>{'energy': record.energy, 'date': record.date, 'location': record.location}),
       child: Container(
-        width: (MediaQuery.of(context).size.width - 150) / 8,
-        height: (MediaQuery.of(context).size.width - 150) / 8,
+        width: (size.width - 150) / 8,
+        height: (size.width - 150) / 8,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: getCircleColor(record.energy),
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: recordsByYearAndMonth(),
-      builder: (futureContext, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Ooops...'));
-        }
-        if (snapshot.connectionState == ConnectionState.done) {
-          return _completeScreen();
-        }
-        return Center(child: Text('loading...'));
-      },
     );
   }
 }
