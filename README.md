@@ -1,44 +1,49 @@
- <img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/design.png" width="1000">
+
+# Suncheck
+Suncheck allows you to record and archive your sunlight intake. Build healthy habits by learning how much solar energy you are getting.
+* 500+ downloads on [Appstore](https://apps.apple.com/nz/app/suncheck/id1576824683)
+* 200+ upvotes on [Product Hunt](https://www.producthunt.com/posts/suncheck?utm_campaign=producthunt-atom-posts-feed&utm_medium=rss-feed&utm_source=producthunt-atom-posts-feed)
+
+## Table of Contents
+
+- [Why Suncheck](#why-suncheck)
+- [Main Features](#main-features)
+- [Implementation](#implementation)
 
 ## Why Suncheck
-당신은 하루에 해를 얼마나 보나요?
+Due to the elongated pandemic, the time we spend indoors has increased dramatically. With less time spent under natural sunlight the overall anxiety and depression levels have risen in individuals.
 
-> 코시국에 더욱 우울하거나 무기력한 건 햇살을 충분히 받지 못해서 일 수도 있어요.
-> 매일 단 15분의 햇살만으로 우리 뇌에서는 우울증을 예방할 수 있을 만큼의 세로토닌이 분비됩니다.
-> 만약 하루 동안 내가 얼마나 햇살을 받는지 알 수 있다면 우리 기분을 더욱 주도적으로 관리해 나갈 수 있지 않을까요?
-> Suncheck과 함께, 나만의 햇빛 일지를 작성하고 더 상쾌하고 기분 좋은 일상을 만들어나가세요 :)
+If we can keep track and visualize the time we spend in the sun, we could easily check and adjust our lifestyles to feel better.
 
-
-## Main Functions
-  <b>1. 햇살 기록하기</b>
+## Main Features
+  <b>1. Record Your Time In The Sun</b>
   
 <img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/first.png" width="600">
 
-홈 화면에 있는 동그라미 버튼으로 자신이 햇살을 받는 시간을 기록할 수 있습니다.
-15분이 경과할 때마다 버튼의 색상이 더 진하게 변경됩니다.
+Users can record the time they spend under the sun by simply tapping the center circle. 
+Once it starts recording, the circle radiates like a sun.
   
   
-> 걷는 움직임이 감지 되거나 앱을 키고 15 분 후 리마인더 notification 이 나갑니다. 
+> A notification is sent after 15 mins
   
-  <b>2. 기록 확인하기</b>
+  <b>2. Visualizing Data</b>
   
   <img alt="suncheck" title="suncheck" src="https://github.com/sohekim/suncheck/blob/master/second.png" width="430">
   
-달력 화면을 통해 나의 월별 햇살 일지를 보고 각 동그라미를 눌렀을 때 그날 받은 햇살, 위치, 비타민 D 와 전기량을 볼 수 있습니다.
+The main button changes color after every 15 minutes has passed, so that it gives users a good idea about how much sun they have received.
 
-  <b>3. 내 실시간 위치의 현재 날씨</b>
 
-나의 현재 위치에 따른 실시간 날씨를 볼 수 있습니다. 
+<b>3. Real Time Walking Sensor</b>
+
+<img alt="suncheck" title="suncheck" src="https://live.staticflickr.com/65535/52084489147_e4970902c7_b.jpg" width= "750">
+
+Once the user allows location access, Flutter's GeoLocation updates their current location. With this data, the app detects the user's movement and sends notifications accordingly.
  
 ## Implementation
 
+<img src = "https://live.staticflickr.com/65535/52085767084_40a5d5a5dc_b.jpg">
+
   <b> Serverless Cross-Platform Mobile App </b>
-  
-  - 하나의 코드 베이스로 android, ios 배포가 가능해 유지, 보수를 간단히 할 수 있습니다.
-  - 서버가 없기 때문에 기존 서버-클라이언트 아키텍처 보다 더욱 scalable, flexible, cost-efficient 합니다.
-  - 크로스 플랫폼 의 유연함과 비용 절감 의 목적으로 별도의 database 서버를 띄우는 대신 SQLite 를 사용해서 로컬에서 간단한 DB 를 구현했습니다. 
-
-
   
 
 | Framework            | Client       |  Database                |   External API              |   
